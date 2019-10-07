@@ -13,6 +13,7 @@ export class MovieComponent implements OnInit {
   title: string = "";
   year: number = 0;
   movieId: string = "";
+  
 
 
   constructor(private dbService: DatabaseService) { }
