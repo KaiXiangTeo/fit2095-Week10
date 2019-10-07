@@ -8,14 +8,17 @@ import { DatabaseService } from "../database.service";
 })
 export class MovieComponent implements OnInit {
   movieDB: any[] = [];
+  actorsDB: any[] = [];
+
   section = 1;
 
   title: string = "";
   year: number = 0;
   movieId: string = "";
+  movieActor:any[]=[];
+  aname:string="";
+  aid:string="";
   
-
-
   constructor(private dbService: DatabaseService) { }
 
   onGetMovies(){
@@ -24,11 +27,11 @@ export class MovieComponent implements OnInit {
     })
   }
  
-  OnSaveMovie(item){
+  OnSaveMovie(){
     let obj = {title:this.title, year:this.year};
     this.dbService.createMovie(obj).subscribe(result => {
       this.onGetMovies();
-    });
+    })
   }
 
   //Delete Movie
@@ -41,13 +44,48 @@ export class MovieComponent implements OnInit {
   onDeletebeforeYear(aYear:number){
     let movies = this.movieDB.filter(element => element.year <= aYear)
     movies.forEach(element => {
-      this.dbService.deleteMovie(element._id).subscribe()
+      this.dbService.deleteMovie(element._id).subscribe(result => {
+        this.onGetMovies();
+      })
     })
+  }
+
+  onGetActors() {
+    this.dbService.getActors().subscribe((data: any[]) => {
+      this.actorsDB = data;
+    });
+  }
+  addActorToMovie(){
+    this.onGetActors();
+  }
+
+  onSelectActor(item) {
+    this.aname = item.name;
+    this.aid = item._id;
+   
+  }
+  onSelectUpdate(item) {
+    this.title = item.title;
+    this.year = item.year;
+    this.movieId=item._id;
+    this.movieActor= item.actors;
+  }
+
+  onUpdateMovie() {
+    if (this.aid !=""){
+      this.movieActor.push(this.aid);
+    }
+    let obj = { title: this.title, year: this.year ,actors:this.movieActor};
+    this.dbService.updateMovie(this.movieId, obj).subscribe(result => {
+      this.onGetMovies();
+    });
   }
 
   // This lifecycle callback function will be invoked with the component get initialized by Angular.
   ngOnInit() {
-    this.onGetMovies();
+    this.onGetMovies();  
+    this.onGetActors();
+
   }
 
   changeSection(sectionId) {
@@ -59,6 +97,8 @@ export class MovieComponent implements OnInit {
     this.title = "";
     this.year = 0;
     this.movieId = "";
+    this.aname = "";
+    this.aid = "";
   }
 
 

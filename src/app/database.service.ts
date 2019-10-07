@@ -44,7 +44,7 @@ export class DatabaseService {
   }
   
   createMovie(data){
-    return this.http.post("/actors",data,httpOptions);
+    return this.http.post("/movies",data,httpOptions);
   }
 
   updateMovie(id, data) {
